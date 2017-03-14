@@ -16,7 +16,7 @@
 #  name: custom-snapshot
 #  location: "./custom-snapshot.yaml"
 # Need this for Esqueleto
-resolver: nightly-2017-02-07
+resolver: lts-8.5
 
 # User packages to be built.
 # Various formats can be used as shown in the example below.

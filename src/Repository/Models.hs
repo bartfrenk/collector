@@ -1,43 +1,44 @@
-{-# LANGUAGE FlexibleInstances          #-}
 {-# LANGUAGE EmptyDataDecls             #-}
 {-# LANGUAGE FlexibleContexts           #-}
+{-# LANGUAGE FlexibleInstances          #-}
 {-# LANGUAGE GADTs                      #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
-{-# LANGUAGE NoImplicitPrelude          #-}
 {-# LANGUAGE MultiParamTypeClasses      #-}
+{-# LANGUAGE NoImplicitPrelude          #-}
 {-# LANGUAGE OverloadedStrings          #-}
 {-# LANGUAGE QuasiQuotes                #-}
 {-# LANGUAGE TemplateHaskell            #-}
 {-# LANGUAGE TypeFamilies               #-}
 
-module Models.Persistent where
+module Repository.Models ( module Repository.Models
+                         , module Repository.Types
+                         ) where
 
-import BasicPrelude
-import Database.Persist.TH
-import Database.Persist.Sql (Entity(..))
-import Data.Time.Clock
+import           BasicPrelude
+import           Data.Time.Clock
+import           Database.Persist.Sql (Entity (..))
+import           Database.Persist.TH
 
-import Models.Types
+import           Repository.Types
 
 share [mkPersist sqlSettings { mpsGenerateLenses = True },
        mkMigrate "migrateAll"] [persistLowerCase|
 
 Schema
-  label Text
-  spec SchemaSpec
+  data SchemaSpec
 
 Script
   label Text
   code ScriptCode
 
-Group
+Source
   schema SchemaId
 
 Blob
-  updated UTCTime default=CURRENT_TIME
-  group GroupId
+  modified UTCTime default=CURRENT_TIME
+  source SourceId
   extId ExtId
-  UniqueExtId group extId
+  UniqueExtId source extId
   data BlobData
   tags TagList
   active Bool
@@ -45,13 +46,12 @@ Blob
 
 Counter
   type CounterType
-  group GroupId
+  source SourceId
   blobExtId ExtId
   hour Hour
-  DataPoint group blobExtId hour
+  DataPoint source blobExtId hour
   value Count
   deriving Show
-
 |]
 
 type BlobE = Entity Blob

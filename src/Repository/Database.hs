@@ -1,18 +1,18 @@
-{-# LANGUAGE IncoherentInstances #-}
+{-# LANGUAGE IncoherentInstances  #-}
 {-# OPTIONS_GHC -fno-warn-orphans #-}
-{-# LANGUAGE NoImplicitPrelude #-}
-{-# LANGUAGE FlexibleInstances #-}
+{-# LANGUAGE FlexibleInstances    #-}
+{-# LANGUAGE NoImplicitPrelude    #-}
+{-# LANGUAGE RecordWildCards      #-}
 {-# LANGUAGE TypeSynonymInstances #-}
-{-# LANGUAGE RecordWildCards #-}
 
-module Store.Persist where
+module Store.Database where
 
-import BasicPrelude hiding (groupBy)
-import Database.Persist.Sql hiding ((==.))
-import Database.Esqueleto hiding ((+=.), (=.))
+import           BasicPrelude         hiding (groupBy)
+import           Database.Esqueleto   hiding ((+=.), (=.))
+import           Database.Persist.Sql hiding ((==.))
 
-import Store.Class
-import Models.Persistent as M
+import           Repository.Models    as M
+import           Repository.Ports
 
 instance MonadIO m => BlobStore (SqlPersistT m) where
   mergeBlobs = mapM_ (`upsert` [])
