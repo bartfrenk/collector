@@ -7,17 +7,36 @@
 
 module Web.API where
 
-import qualified JSONSchema.Draft4 as D4
 import           Servant
 
-import           Repository.Models
+import           Core.Concepts
 
-type API = "sources" :> Capture "sourceId" SourceId :> PerGroupAPI
 
-type Paging = QueryParam "offset" Int :> QueryParam "limit"
+collectorAPI :: Proxy CollectorAPI
+collectorAPI = Proxy
 
-type PerGroupAPI = "schema" :> Get '[JSON] D4.Schema
+type CollectorAPI = "schemas" :> SchemaAPI
 
+  --"sources" :> SourceAPI sourceId
+
+type WithPaging = QueryParam "offset" Int :> QueryParam "limit"
+
+type SourceAPI sourceId =
+  ReqBody '[JSON] SchemaDefinition :> Post '[JSON] sourceId :<|>
+  Capture "sourceId" sourceId :>
+    "schema" :> (
+      Get '[JSON] SchemaDefinition :<|>
+      Post :> ReqBody
+      )
+
+type SchemaAPI = Capture "space" SchemaSpace :> Capture "name" SchemaName :> (
+  Get '[JSON] SchemaDefinition :<|>
+  ReqBody '[JSON] SchemaDefinition :> Put '[JSON] NoContent)
+
+
+    -- :<|>
+    -- "items" :> ReqBody '[JSON] [] :> Post '[JSON] NoContent :<|>
+    -- "items" :> Get '[JSON] [])
 
   -- "blobs" :> (
   -- ReqBody '[JSON] [Blob] :> Post '[JSON] Int :<|>

@@ -1,3 +1,4 @@
+{-# LANGUAGE DeriveGeneric              #-}
 {-# LANGUAGE EmptyDataDecls             #-}
 {-# LANGUAGE FlexibleContexts           #-}
 {-# LANGUAGE FlexibleInstances          #-}
@@ -10,50 +11,57 @@
 {-# LANGUAGE TemplateHaskell            #-}
 {-# LANGUAGE TypeFamilies               #-}
 
-module Repository.Models ( module Repository.Models
-                         , module Repository.Types
-                         ) where
+module Persistent.Models where
 
 import           BasicPrelude
 import           Data.Time.Clock
 import           Database.Persist.Sql (Entity (..))
 import           Database.Persist.TH
+import           GHC.Generics
 
-import           Repository.Types
+import qualified Core.Concepts as C
+import           Persistent.Instances   ()
 
-share [mkPersist sqlSettings { mpsGenerateLenses = True },
+share [mkPersist sqlSettings,
        mkMigrate "migrateAll"] [persistLowerCase|
 
 Schema
-  data SchemaSpec
+  space C.SchemaSpace
+  name C.SchemaName
+  UniqueNameInSpace space name
+  def C.SchemaDefinition
+  deriving Show
 
 Script
   label Text
-  code ScriptCode
+  code Text
+  deriving Show
 
 Source
   schema SchemaId
-
-Blob
-  modified UTCTime default=CURRENT_TIME
-  source SourceId
-  extId ExtId
-  UniqueExtId source extId
-  data BlobData
-  tags TagList
-  active Bool
   deriving Show
 
-Counter
-  type CounterType
+Item json
   source SourceId
-  blobExtId ExtId
-  hour Hour
-  DataPoint source blobExtId hour
-  value Count
+  key C.ItemKey
+  UniqueKeyInSource source key
+  tags [C.Tag]
+  active Bool
+  contents C.ItemEncoding
+  modified UTCTime default=CURRENT_TIMESTAMP
+  deriving Show
+  deriving Generic
+
+Counter
+  type C.CounterType
+  source SourceId
+  itemKey C.ItemKey
+  hour C.Count
+  DataPoint source itemKey hour
+  value C.Count
   deriving Show
 |]
 
-type BlobE = Entity Blob
+type ItemE = Entity Item
 
 type CounterE = Entity Counter

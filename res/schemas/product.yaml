@@ -1,0 +1,24 @@
+$schema: http://json-schema.org/draft-04/schema
+title: product
+type: object
+properties:
+  title:
+    type: string
+  description:
+    type: string
+  clickUrl:
+    type: string
+  imageUrl:
+    type: string
+  logoUrl:
+    type: string
+  price:
+    type: number
+  discountedPrice:
+    type: number
+  stickerText:
+    type: string
+required:
+  - title
+  - clickUrl
+  - imageUrl
