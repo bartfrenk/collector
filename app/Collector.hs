@@ -18,8 +18,8 @@ import           Network.Wai.Handler.Warp    (run)
 import           Network.Wai.Middleware.Cors
 import           Servant
 
-import           Persistent.Database         (migrateAll)
-import           Web.API
+import           Persistent.Database         (SourceId, migrateAll)
+import           Web.API                     (CollectorAPI, collectorAPI)
 import           Web.Server                  (collectorServer)
 
 
@@ -44,7 +44,7 @@ postgres = "host=localhost \
            \password=changeit \
            \dbname=collector"
 
-server :: ConnectionString -> LogLevel -> Server CollectorAPI
+server :: ConnectionString -> LogLevel -> Server (CollectorAPI SourceId)
 server str level = enter (Nat translate) collectorServer
   where translate :: BackendT (ExceptT ServantErr IO) a -> Handler a
         translate = runBackend str level

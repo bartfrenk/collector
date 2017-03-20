@@ -38,6 +38,7 @@ Script
   deriving Show
 
 Source
+  label Text
   schema SchemaId
   deriving Show
 
