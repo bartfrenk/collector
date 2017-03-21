@@ -38,7 +38,7 @@ test-put-schema: target/schemas/product.json
 		 -H 'Content-Type: application/json' -v -X 'PUT'
 
 test-get-schema: ## Get the default/product schema
-	curl 'http://localhost:5000/schemas/default/product'
+	curl 'http://localhost:5000/schemas/default/product' | jq
 
 test-post-source: ## Post a new source
 test-post-source: target/schemas/source.json
